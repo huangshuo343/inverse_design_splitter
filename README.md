@@ -2,7 +2,9 @@
 
 This code uses a deep convolutional neural network to design the Y-splitters with different split ratios. Our network is fully unsuopervised, which means that you do not need to pre-generate any structures before training.
 
-This code is based on `tensorflow-1.15`, and the version of each package can be found at environment.yml. You can set up the environment using:
+This code is based on `tensorflow-1.15`, and we have trained our model both on a NVIDIA GTX 3050 GPU (Windows 7) and a Tesla V100 GPU (Linux 3.10.0). It requires GPU memory for about 1.5 GB, and CPU memory for about 3 GB. Since not all GPUs support tensorflow-1.15, please check your GPU before running the code.
+
+The version of each package can be found at environment.yml. You can set up the environment using:
 ```sh
 conda env create -f environment.yml
 ```
