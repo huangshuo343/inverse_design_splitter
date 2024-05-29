@@ -15,11 +15,7 @@ python voxelmorph-waveguide_structure_calculate/scripts/tensorflow/train_wavegui
 ```
 The list of the training samples is in the file `training_set_reduce_simulate_area_symmetric_separatechannel12.txt`.
 
-It is noticeable that you need to manually change the binarization wight in the line 43 of ``layers.py`` after every 50 epochs:
-```sh
-n_predict_allresults = (n_predict_allresults - 0.5) * 150
-```
-For epochs 0-50, the binarization wight number 150 should be 5, then 25, 50, 100, 150 for epochs 51-100, 101-150, 151-200 and 201-250.
+It is noticeable that you need to manually change the binarization wight in the line 43 of ``layers.py`` after every 50 epochs:`n_predict_allresults = (n_predict_allresults - 0.5) * 150`. For epochs 0-50, the binarization wight number 150 should be 5, then 25, 50, 100, 150 for epochs 51-100, 101-150, 151-200 and 201-250.
 
 We provided he training samples in the folder `data_training`. You can buind your own training samples using `Untitled4_reduce_simulate_region.ipynb`.
 
