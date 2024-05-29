@@ -1,4 +1,4 @@
-# Design of Y-splitters using a fully unsupervised neural network
+# Design Y-splitters using a fully unsupervised neural network with dimension expansion
 
 This code uses a deep convolutional neural network to design the Y-splitters with different split ratios. Our network is fully unsuopervised, which means that you do not need to pre-generate any structures before training.
 
