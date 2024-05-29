@@ -19,8 +19,10 @@ It is noticeable that you need to manually change the binarization wight in the 
 
 We provided he training samples in the folder `data_training`. You can buind your own training samples using `Untitled4_reduce_simulate_region.ipynb`.
 
-After training, you can use `voxelmorph-waveguide_structure_calculate/scripts/tensorflow/test_waveguide.py` to generate the results for the test set. You can use the code in `Untitled4_reduce_simulate_region_test.ipynb` to generate the inputs for testing. We provided our model after 250 epochs in `models`, 6 test inputs in `test_inputs`, and the generated structures are in `test_results`.
+After training, you can use `voxelmorph-waveguide_structure_calculate/scripts/tensorflow/test_waveguide.py` to generate the results for the test set. You can use the code in `Untitled4_reduce_simulate_region_test.ipynb` to generate the inputs for testing. We provided our model after 250 epochs in `models`, 6 test inputs in `test_inputs`, and the generated structures of the 6 test inputs in `test_results`.
 
 To evaluate the power splitting accuracy and transmission efficiency, you can use the code in `Untitled5_test_reduce_simulate_region_small_interpolate_alltest.ipynb`.
+
+The training time for 250 epochs is 280 seconds, and the time for generating 1 test structure is about 1 second.
 
 If you have any comments or suggestions, please feel free to tell us. We appreciate all your suggestions.
