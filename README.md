@@ -25,6 +25,6 @@ To evaluate the power splitting accuracy and transmission efficiency, you can us
 
 The training time for 250 epochs is 280 seconds, and the time for generating 1 test structure is about 1 second.
 
-Our U-Net structure is based on the `voxelmorph` (G Balakrishnan et al. IEEE Transactions on Medical Imaging, 2019. [eprint arXiv:1809.05231]https://arxiv.org/abs/1809.05231). We appreciate the authors of Voxelmorph.
+Our U-Net structure is based on the `voxelmorph` (G Balakrishnan et al. IEEE Transactions on Medical Imaging, 2019. [eprint arXiv:1809.05231](https://arxiv.org/abs/1809.05231)). We appreciate the authors of Voxelmorph.
 
 If you have any comments or suggestions, please let us know. We appreciate all your suggestions.
