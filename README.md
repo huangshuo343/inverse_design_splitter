@@ -17,11 +17,11 @@ The list of the training samples is in the file `training_set_reduce_simulate_ar
 
 It is noticeable that you need to manually change the binarization weight in line 43 of ``layers.py`` (`n_predict_allresults = (n_predict_allresults - 0.5) * 150`) after every 50 epochs and continue the training. For epochs 0-50, the binarization weight number 150 should be 5, then 25, 50, 100, and 150 for epochs 51-100, 101-150, 151-200, and 201-250.
 
-We provided the training samples in the folder `data_training`. You can build your own training samples using `Untitled4_reduce_simulate_region.ipynb`.
+We provided the training samples in the folder `data_training`. You can build your own training samples using `Generate_training_inputs.ipynb`.
 
-After training, you can use `voxelmorph-waveguide_structure_calculate/scripts/tensorflow/test_waveguide.py` to generate the results for the test set. You can use the code in `Untitled4_reduce_simulate_region_test.ipynb` to generate the inputs for testing. We provided our model after 250 epochs in `models`, 6 test inputs in `test_inputs`, and the generated structures of the 6 test inputs in `test_results`.
+After training, you can use `voxelmorph-waveguide_structure_calculate/scripts/tensorflow/test_waveguide.py` to generate the results for the test set. You can use the code in `Generate_test_inputs.ipynb` to generate the inputs for testing. We provided our model after 250 epochs in `models`, 6 test inputs in `test_inputs`, and the generated structures of the 6 test inputs in `test_results`.
 
-To evaluate the power splitting accuracy and transmission efficiency, you can use the code in `Untitled5_test_reduce_simulate_region_small_interpolate_alltest.ipynb`.
+To evaluate the power splitting accuracy and transmission efficiency, you can use the code in `Evaluating_test_structures.ipynb`.
 
 The training time for 250 epochs is 280 seconds, and the time for generating 1 test structure is about 1 second.
 
