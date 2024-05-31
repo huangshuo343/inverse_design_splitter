@@ -11,12 +11,69 @@ import scipy.sparse as sparse
 import scipy.sparse.linalg as linalg
 from tensorflow.python.framework import ops
 from tensorflow import sparse as tensorflow_sparse
+import time
 
 from .utils import is_affine, extract_affine_ndims, affine_shift_to_identity, affine_identity_to_shift
 
 # make the following neuron layers directly available from vxm
 SpatialTransformer = ne.layers.SpatialTransformer
 LocalParam = ne.layers.LocalParam
+
+
+class ChangeBinaryWeightCallback(tf.keras.callbacks.Callback):
+    def __init__(self, change_interval=50, layer=None, **kwargs):
+        super(ChangeBinaryWeightCallback, self).__init__(**kwargs)
+        self.change_interval = change_interval
+        self.layer = layer
+
+    def on_epoch_begin(self, epoch, logs=None):
+        if epoch % self.change_interval == 0:
+            binary_weight = self.change_parameter(epoch)
+            print(f'Epoch {epoch}: Changing layer parameter to {binary_weight}')
+            self.layer.update_parameter(binary_weight)
+
+    def change_parameter(self, epoch):
+        # Define how you want to change the parameter
+        # For example, let's change the parameter value
+        all_weights = np.array([5.0, 25.0, 50.0, 100.0, 150.0], dtype = float)
+        #new_parameter_value = 1.0 * (0.1 ** (epoch // self.change_interval))
+        binary_weight = all_weights[int(epoch//self.change_interval)]
+        return binary_weight
+
+
+class ContinuousChangeBinaryWeightCallback(tf.keras.callbacks.Callback):
+    def __init__(self, initial_weight=5, enlarge_rate = 1.015, initial_learning = 5e-5, change_learning_steps=150, layer=None, **kwargs):
+        super(ContinuousChangeBinaryWeightCallback, self).__init__(**kwargs)
+        self.initial_weight = initial_weight
+        self.enlarge_rate = enlarge_rate
+        self.initial_learning = initial_learning
+        self.change_learning_steps = change_learning_steps
+        self.layer = layer
+
+    def on_epoch_begin(self, epoch, logs=None):
+        #if epoch % self.change_interval == 0:
+        binary_weight, learning_rate_newvalue = self.change_parameter(epoch)
+        print(f'Epoch {epoch}: Changing layer parameter to {binary_weight} and learning rate to {learning_rate_newvalue}')
+        self.layer.update_parameter(binary_weight)
+
+    def change_parameter(self, epoch):
+        # Define how you want to change the parameter
+        # For example, let's change the parameter value
+        #all_weights = np.array([5, 25, 50, 100, 150], dtype = float)
+        #new_parameter_value = 1.0 * (0.1 ** (epoch // self.change_interval))
+        #binary_weight = all_weights[int(epoch//self.change_interval)]
+        binary_weight =  self.initial_weight * (self.enlarge_rate ** epoch)
+        #learning_rate_newvalue = self.initial_learning
+        #if epoch == self.change_learning_interval:
+        #    learning_rate_newvalue = self.initial_learning / 10
+        #    tf.keras.backend.set_value(self.model.optimizer.learning_rate, learning_rate_newvalue)
+        #if epoch > self.change_learning_interval:
+        #    learning_rate_newvalue = self.initial_learning / 10
+        learning_rate_newvalue = self.initial_learning * (0.1 ** float(epoch // self.change_learning_steps))
+        #print(epoch // self.change_learning_steps)
+        tf.keras.backend.set_value(self.model.optimizer.learning_rate, learning_rate_newvalue)
+        time.sleep(3)
+        return binary_weight, learning_rate_newvalue
 
 
 class WaveguideValueDesignOutput(Layer):
@@ -26,6 +83,8 @@ class WaveguideValueDesignOutput(Layer):
 
     def __init__(self, **kwards):
         super(WaveguideValueDesignOutput, self).__init__(**kwards)
+        #self.binary_weight = binary_weight
+        self.binary_weight = tf.Variable(5.0, trainable=False)
 
     def build(self, input_shape):
         super(WaveguideValueDesignOutput, self).build(input_shape)
@@ -40,7 +99,7 @@ class WaveguideValueDesignOutput(Layer):
         n_predict_allresults = (n_predict_allresults - tf.reduce_min(n_predict_allresults)) / \
                                (tf.reduce_max(n_predict_allresults) - tf.reduce_min(n_predict_allresults))
 
-        n_predict_allresults = (n_predict_allresults - 0.5) * 150
+        n_predict_allresults = (n_predict_allresults - 0.5) * self.binary_weight
                                                                  #5 25 50 100 150
 
         n_predict_upsample = tf.image.resize_images(n_predict_allresults,
@@ -59,8 +118,11 @@ class WaveguideValueDesignOutput(Layer):
 
         return n_predict
 
-        def compute_output_shape(selfself, input_shape):
-            return input_shape
+    def update_parameter(self, new_value):
+        tf.keras.backend.set_value(self.binary_weight, new_value)
+
+    def compute_output_shape(selfself, input_shape):
+        return input_shape
 
 
 class WaveguideOutputSimulation(Layer):

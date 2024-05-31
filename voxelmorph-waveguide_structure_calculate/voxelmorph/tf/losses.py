@@ -186,6 +186,18 @@ class Grad:
         return tf.add_n(df) / len(df)
 
 
+class Binary:
+    """
+    N-D binarization loss for waveguide generation
+    """
+
+    def loss(selfself, y_true, y_pred):
+        y_pred_norm = (y_pred - 1.0) / 2.5 - 0.5 #y_pred_norm = y_pred / 3.5 - 0.5
+        y_pred_norm1minuse1 = y_pred_norm * 2
+        y_not_binary = 1.0 - tf.abs(y_pred_norm1minuse1)
+        y_binary_mean = tf.reduce_mean(y_not_binary)
+        return y_binary_mean
+
 
 class KL:
     """
