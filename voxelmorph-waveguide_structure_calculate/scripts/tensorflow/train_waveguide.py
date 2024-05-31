@@ -33,7 +33,7 @@ parser = argparse.ArgumentParser()
 # data organization parameters
 # parser.add_argument('--datadir', help='base data directory')
 parser.add_argument('--datalist', default='C:/Users/DELL/Desktop/2023年上半年学习和生活的文件/科研的文件/waveguide_structure_design'
-                                          '/training_set_reduce_simulate_area_symmetric_spreatchannel12.txt',
+                                          '/training_set_reduce_simulate_area_symmetric_separatechannel12.txt',
                     help='data list text file')
 parser.add_argument('--num_feature', type=int, default=1, help='number of feature components used for registration, '
                                                                'specify that data has multiple channel features')
@@ -42,14 +42,14 @@ parser.add_argument('--model-dir', default='models', help='model output director
 parser.add_argument('--multichannel', action='store_true', help='specify that data has multiple channels')
 parser.add_argument("--phase_encoding", type=str, default='AP', help="phase encoding direction")
 # training parameters
-parser.add_argument('--gpu', default='1', help='GPU ID numbers (default: 0)')
+parser.add_argument('--gpu', default='0', help='GPU ID numbers (default: 0)')
 parser.add_argument('--batch-size', type=int, default=1, help='batch size (default: 1)')
-parser.add_argument('--epochs', type=int, default=250, help='number of training epochs (default: 1500)')
+parser.add_argument('--epochs', type=int, default=150, help='number of training epochs (default: 1500)')
 parser.add_argument('--steps-per-epoch', type=int, default=15, help='frequency of model saves (default: 100)')
 parser.add_argument('--load-weights', help='optional weights file to initialize with')
-parser.add_argument('--initial-epoch', type=int, default=200, help='initial epoch number (default: 0)')
-parser.add_argument('--lr', type=float, default=5e-6, help='learning rate (default: 0.00001)')
-#0 5e-5, 100 5e-6
+parser.add_argument('--initial-epoch', type=int, default=0, help='initial epoch number (default: 0)')
+parser.add_argument('--lr', type=float, default=5e-5, help='learning rate (default: 0.00001)')
+#0 5e-5, 100 5e-6 #0d: 0 5e-5, 150 5e-6, epoch: 0-100, 50, 50
 
 # network architecture parameters
 parser.add_argument('--enc', type=int, nargs='+', help='list of unet encoder filters (default: 16 32 32 32)')
@@ -69,8 +69,8 @@ args = parser.parse_args()
 
 #tfcon.set_soft_device_placement(True)
 
-args.load_weights = 'C:/Users/DELL/Desktop/2023年上半年学习和生活的文件/科研的文件/waveguide_structure_design/voxelmorph' \
-                    '-waveguide_structure_calculate/scripts/tensorflow/models/0200.h5'
+#args.load_weights = 'C:/Users/DELL/Desktop/2023年上半年学习和生活的文件/科研的文件/waveguide_structure_design/voxelmorph' \
+#                    '-waveguide_structure_calculate/scripts/tensorflow/models/0250.h5'
 
 # load and prepare training data
 # train_vol_names = glob.glob(os.path.join(args.datadir, '*.npz'))
@@ -226,7 +226,8 @@ with tf.device(device):
         flow_shape = model.outputs[-1].shape[1:-1]
         losses += [vxm.losses.KL(args.kl_lambda, flow_shape).loss]
     else:
-        losses += [vxm.losses.Grad('l2').loss]
+        #losses += [vxm.losses.Grad('l2').loss]
+        losses += [vxm.losses.Binary().loss]
 
     weights += [args.lambda_weight]
     #
@@ -239,6 +240,24 @@ with tf.device(device):
 
     model.compile(optimizer=tf.keras.optimizers.Adam(lr=args.lr), loss=losses, loss_weights=weights)
 
+    # Get the custom layer instance from the model
+    custom_layer = None
+    for layer in model.layers:
+        if isinstance(layer, vxm.tf.layers.WaveguideValueDesignOutput):
+            custom_layer = layer
+            break
+
+    #print(model.layers)
+
+    # Ensure the custom layer is found
+    if custom_layer is None:
+        raise ValueError("Custom layer not found in the model.")
+
+    # Create an instance of the custom callback with the custom layer
+    change_parameter_callback = vxm.tf.layers.ChangeBinaryWeightCallback(change_interval=50, layer=custom_layer)
+    #change_parameter_callback = vxm.tf.layers.ContinuousChangeBinaryWeightCallback(initial_weight=1, enlarge_rate = 1.015,
+    #                                                                     change_learning_steps=150, layer=custom_layer)
+
     # save starting weights
     model.save(save_filename.format(epoch=args.initial_epoch))
     model.summary()
@@ -246,7 +265,7 @@ with tf.device(device):
         initial_epoch=args.initial_epoch,
         epochs=args.epochs,
         steps_per_epoch=args.steps_per_epoch,
-        callbacks=[save_callback],
+        callbacks=[save_callback,change_parameter_callback],
         verbose=2
     )
 
