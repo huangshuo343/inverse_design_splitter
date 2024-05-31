@@ -72,7 +72,7 @@ class ContinuousChangeBinaryWeightCallback(tf.keras.callbacks.Callback):
         learning_rate_newvalue = self.initial_learning * (0.1 ** float(epoch // self.change_learning_steps))
         #print(epoch // self.change_learning_steps)
         tf.keras.backend.set_value(self.model.optimizer.learning_rate, learning_rate_newvalue)
-        time.sleep(3)
+        #time.sleep(3)
         return binary_weight, learning_rate_newvalue
 
 
