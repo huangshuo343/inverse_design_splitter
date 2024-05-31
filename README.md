@@ -1,4 +1,4 @@
-# DEN: Design Y-splitters using a fully unsupervised neural network with dimension expansion
+# Design Y-splitters using a fully unsupervised neural network with dimension expansion (DEN)
 
 This code uses a deep convolutional neural network to design the Y-splitters with different split ratios. Our network is fully unsupervised, so you do not need to pre-generate any structures before training.
 
