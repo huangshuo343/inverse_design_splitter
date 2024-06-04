@@ -148,7 +148,7 @@ class WaveguideOutputSimulation(Layer):
         # be less than 4.
 
         A1 = self.build_laplacian_2d_PML(nx, ny, n_PML, n_PML, n_PML, n_PML)
-        A1_tensor = tf.convert_to_tensor(A1.todense(), name='A1_tensor', dtype='complex64')
+        A1_tensor = tf.convert_to_tensor(A1.todense(dtype='complex64'), name='A1_tensor', dtype='complex64')
         n_pred_complex64 = tf.cast(n_prediction, dtype=tf.complex64,
                                    name='n_pred_tensor_complex64')
         print('shape of n_pred_complex64 is: ', n_pred_complex64.shape, '.')
