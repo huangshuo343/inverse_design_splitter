@@ -15,7 +15,7 @@ python voxelmorph-waveguide_structure_calculate/scripts/tensorflow/train_wavegui
 ```
 The list of the training samples is in the file `training_set_reduce_simulate_area_symmetric_separatechannel12.txt`.
 
-The binarization weight can be automatically changed by the code. For epochs 0-50, the binarization weight is 5, then 25, 50, 100, and 150 for epochs 51-100, 101-150, 151-200, and 201-250.
+The binarization weight can be automatically changed by the code. For epochs 0-50, the binarization weight is 5, then 25, 50, 100, and 150 for epochs 51-100, 101-150, 151-200, and 201-250. For the learning rate, you can manuate reduce it from 5e-5 to 5e-6 after 150 epochs.
 
 We provided the training samples in the folder `data_training`. You can build your own training samples using `Generate_training_inputs.ipynb`.
 
